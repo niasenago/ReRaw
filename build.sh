@@ -2,6 +2,6 @@
 
 set -xe
 
-gcc -Wall -Werror -ggdb main.c -o bin/main.out
+gcc -Wall -Werror -ggdb -I. main.c -o bin/main.out -lm
 
-bin/main.out
+bin/main.out main.c
