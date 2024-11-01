@@ -44,28 +44,35 @@ int main(int argc, char **argv){
         map[x][y] ++;
     }
 
-    float max = 0;
-
+    size_t max_count = 0;
     for(size_t x = 0; x < MAP_SIZE; ++x){
         for(size_t y = 0; y < MAP_SIZE; ++y){
-            if (map[x][y] > max) {
-                max = logf(map[x][y]);
+            if(map[x][y] > max_count) {
+                max_count = map[x][y];
             }
         }
     }
+
+    float max = logf((float)max_count);
+
     for(size_t x = 0; x < MAP_SIZE; ++x){
         for(size_t y = 0; y < MAP_SIZE; ++y){
-            float t = logf(map[x][y] / max);
-            uint32_t brightness = t * 255;
-            pixels[x][y] = 0xFF000000 | brightness | brightness << 8 | brightness << 16;
+            float t = 0;
+            if (map[x][y] > 0) {
+                t = logf((float)map[x][y]) / max;
+            }
+            uint32_t brightness = (uint32_t)(t * 255);
+            pixels[x][y] = 0xFF000000 | (brightness << 16) | (brightness << 8) | brightness;
         }
-    }    
+    }
+
     char output_file_path[256];
     sprintf(output_file_path, "%s.output.png", argv[1]);
     if(!stbi_write_png(output_file_path, MAP_SIZE, MAP_SIZE, 4, pixels, MAP_SIZE * sizeof(uint32_t))) {
         fprintf(stderr, "Error: Could not save the output image %s\n", output_file_path);
         return 1;
     }
+    printf("Succesifully generated image %s\n",output_file_path );
 
     free(file_content.content);
     return 0;
